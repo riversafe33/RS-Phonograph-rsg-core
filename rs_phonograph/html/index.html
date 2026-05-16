@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controles + Reproductor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .nui {
+      position: fixed;
+      bottom: 36px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 2px solid #916b3abe;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      width: auto;
+      max-width: 300px;
+      color: #916b3abe;
+      text-align: right;
+      display: none;
+      overflow: auto;
+    }
+
+    .nui h4 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      color: #916b3abe;
+      text-align: left;
+    }
+
+    .nui p {
+      margin: 5px 0;
+      font-size: 20px;
+      text-align: left;
+    }
+
+    .music-nui {
+      position: fixed;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 2px solid #916b3abe;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      width: 350px;
+      color: #916b3abe;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      background-color: #1e1e1e; /* fondo oscuro tipo madera */
+      color: #916b3a;            /* texto dorado */
+      border: 1px solid #916b3a; /* borde dorado opcional */
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 4px #916b3a;
+    }
+    
+    input[type="range"] {
+      accent-color: #916b3a;
+    }
+    input[type="text"],
+    select,
+    button {
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      font-size: 18px;
+    }
+
+    input[type="range"] {
+      width: 80%;
+    }
+
+    button {
+      background-color: #916b3abe;
+      color: #000000be;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #272626;
+    }
+
+    select {
+      background-color: #222;
+      color: #916b3abe;
+    }
+
+    label {
+      font-size: 18px;
+      color: #916b3abe;
+    }
+
+    .volume-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .volume-label {
+      font-size: 22px;
+      color: #916b3abe;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #916b3abe;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #916b3abe;
+    }
+
+    #songButtonList {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #1e1e1e;
+      border-radius: 8px;
+    }
+
+    #songButtonList button {
+      background-color: #000000cc;
+      color: #916b3abe;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #songButtonList button:hover {
+      background-color: #555;
+    }
+
+    .button-row {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .action-btn {
+      width: 96px;
+      height: 48px;
+      cursor: pointer;
+      margin: 5px;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+    }
+
+    #songButtonList::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #songButtonList::-webkit-scrollbar-track {
+      background: #6d5b438e;
+    }
+
+    #songButtonList::-webkit-scrollbar-thumb {
+      background-color: #916b3a;
+      border-radius: 4px;
+      border: 2px solid #000000;
+    }
+
+    .container-phonograph {
+            position: absolute;
+            right: 2%;
+            top: 90%;
+            transform: translateY(-50%);
+            width: 150px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(156, 112, 60, 0.829);
+            border-radius: 15px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .title-phonograph {
+            font-size: 18px;
+            font-weight: bold;
+            color: rgba(156, 112, 60, 0.829);
+            margin: 0;
+            word-wrap: break-word;
+        }
+    
+  </style>
+</head>
+<body>
+  <div class="nui" id="controlPanel">
+    <h4 id="controlTitle"></h4>
+    <p id="controlMove"></p>
+    <p id="controlRotate"></p>
+    <p id="controlHeight"></p>
+    <p id="controlConfirm"></p>
+    <p id="controlCancel"></p>
+    <p id="controlSpeed"></p>
+  </div>
+
+  <div class="container-phonograph">
+    <div class="title-phonograph" id="phonographTextTop"></div>
+    <div class="title-phonograph" id="phonographTextBottom"></div>
+  </div>
+
+
+  <div class="music-nui" id="nui-url-player">
+    <button class="close-btn" onclick="closeNui()">✖︎</button>
+    <label id="labelVolumeUrl"></label>
+    <div class="volume-group">
+      <input type="range" min="0" max="100" value="30" id="volumeSlider" />
+      <span class="volume-label" id="volumeLabel">30%</span>
+    </div>
+    <label id="labelAudioUrl"></label>
+    <input type="text" id="urlInput" placeholder="https://..." />
+    <div class="button-row">
+      <img src="play.png" alt="Play" class="action-btn" onclick="playUrl()" />
+      <img src="stop.png" alt="Stop" class="action-btn" onclick="stopAudio()" />
+      <img src="loop.png" alt="Loop" class="action-btn" onclick="toggleLoop()" />
+    </div>
+    <button id="switchToListBtn" onclick="switchToList()">Lista</button>
+  </div>
+
+  <div class="music-nui" id="nui-song-list" style="display:none;">
+    <button class="close-btn" onclick="closeNui()">✖︎</button>
+    <label id="labelVolumeList"></label>
+    <div class="volume-group">
+      <input type="range" min="0" max="100" value="30" id="volumeSliderList" />
+      <span class="volume-label" id="volumeLabelList">30%</span>
+    </div>
+    <label id="labelSelectSong"></label>
+    <div id="songButtonList"></div>
+    <div class="button-row">
+      <img src="stop.png" alt="Stop" class="action-btn" onclick="stopAudio()" />
+      <img src="loop.png" alt="Loop" class="action-btn" onclick="toggleLoop()" />
+    </div>
+    <button id="switchToUrlBtn" onclick="switchToUrl()">URL</button>
+  </div>
+
+  <script>
+    const controlPanel = document.getElementById('controlPanel');
+    const urlPlayer = document.getElementById('nui-url-player');
+    const songList = document.getElementById('nui-song-list');
+    let audio = new Audio();
+    let loop = false;
+
+    window.addEventListener('message', function(event) {
+      const data = event.data;
+
+      const phonograph = document.querySelector('.container-phonograph');
+      const phonographText = document.getElementById('phonographText');
+
+      if (data.translations && data.action === "show") {
+        document.getElementById("controlTitle").textContent = data.translations.Title;
+        document.getElementById("controlMove").textContent = data.translations.Move;
+        document.getElementById("controlRotate").textContent = data.translations.Rotate;
+        document.getElementById("controlHeight").textContent = data.translations.Height;
+        document.getElementById("controlConfirm").textContent = data.translations.Confirm;
+        document.getElementById("controlCancel").textContent = data.translations.Cancel;
+        document.getElementById("controlSpeed").textContent = data.translations.Speed;
+      }
+
+      if (data.translations && data.type === "showNUI") {
+        document.getElementById("labelVolumeUrl").textContent = data.translations.Volume;
+        document.getElementById("labelAudioUrl").textContent = data.translations.AudioURL;
+        document.getElementById("switchToListBtn").textContent = data.translations.SwitchToList;
+
+        document.getElementById("labelVolumeList").textContent = data.translations.Volume;
+        document.getElementById("labelSelectSong").textContent = data.translations.SelectSong;
+        document.getElementById("switchToUrlBtn").textContent = data.translations.SwitchToUrl;
+      }
+
+      document.getElementById("switchToListBtn").style.display = data.allowList ? "inline-block" : "none";
+      document.getElementById("switchToUrlBtn").style.display = data.allowCustom ? "inline-block" : "none";
+
+      if (data.action === "show") {
+        controlPanel.style.display = 'block';
+      } else if (data.action === "hide") {
+        controlPanel.style.display = 'none';
+      }
+
+      if (data.type === "showNUI") {
+        if (data.allowCustom) {
+          urlPlayer.style.display = 'flex';
+        } else {
+          urlPlayer.style.display = 'none';
+        }
+
+        if (data.allowList) {
+          songList.style.display = 'flex';
+          const container = document.getElementById("songButtonList");
+          container.innerHTML = "";
+          data.songs.forEach(song => {
+            const btn = document.createElement("button");
+            btn.textContent = song.label;
+            btn.onclick = () => {
+              audio.src = song.url;
+              audio.loop = loop;
+              audio.volume = document.getElementById("volumeSliderList").value / 100;
+              audio.play().catch(() => {});
+              fetch(`https://${GetParentResourceName()}/playSelected`, {
+                method: "POST",
+                body: JSON.stringify({ url: song.url })
+              });
+            };
+            container.appendChild(btn);
+          });
+        } else {
+          songList.style.display = 'none';
+        }
+      }
+
+      if (data.type === "hideNUI") {
+        urlPlayer.style.display = 'none';
+        songList.style.display = 'none';
+      }
+
+      if (data.type === 'showPhonograph') {
+        document.getElementById("phonographTextTop").textContent = data.textTop || '';
+        document.getElementById("phonographTextBottom").textContent = data.textBottom || '';
+        phonograph.style.display = 'block';
+      }
+
+
+      if (data.type === 'hidePhonograph') {
+        phonograph.style.display = 'none';
+      }
+    });
+
+    function playUrl() {
+      const url = document.getElementById("urlInput").value;
+      if (url.startsWith("http")) {
+        audio.src = url;
+        audio.loop = loop;
+        audio.volume = document.getElementById("volumeSlider").value / 100;
+        audio.play().catch(() => {});
+        fetch(`https://${GetParentResourceName()}/playUrl`, {
+          method: "POST",
+          body: JSON.stringify({ url })
+        });
+      }
+    }
+
+    function stopAudio() {
+      audio.pause();
+      audio.currentTime = 0;
+      fetch(`https://${GetParentResourceName()}/stopAudio`, {
+        method: "POST"
+      });
+    }
+
+    function toggleLoop() {
+      loop = !loop;
+      audio.loop = loop;
+      fetch(`https://${GetParentResourceName()}/toggleLoop`, {
+        method: "POST"
+      });
+    }
+
+    function switchToList() {
+      urlPlayer.style.display = "none";
+      songList.style.display = "flex";
+    }
+
+    function switchToUrl() {
+      songList.style.display = "none";
+      urlPlayer.style.display = "flex";
+    }
+
+    function closeNui() {
+      urlPlayer.style.display = 'none';
+      songList.style.display = 'none';
+      fetch(`https://${GetParentResourceName()}/closeNui`, {
+        method: "POST"
+      });
+    }
+
+    document.getElementById("volumeSlider").addEventListener("input", e => {
+      const value = e.target.value;
+      document.getElementById("volumeLabel").textContent = `${value}%`;
+      audio.volume = value / 100;
+      fetch(`https://${GetParentResourceName()}/setVolume`, {
+        method: "POST",
+        body: JSON.stringify({ volume: value })
+      });
+    });
+
+    document.getElementById("volumeSliderList").addEventListener("input", e => {
+      const value = e.target.value;
+      document.getElementById("volumeLabelList").textContent = `${value}%`;
+      audio.volume = value / 100;
+      fetch(`https://${GetParentResourceName()}/setVolume`, {
+        method: "POST",
+        body: JSON.stringify({ volume: value })
+      });
+    });
+  </script>
+</body>

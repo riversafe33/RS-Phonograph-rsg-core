@@ -1,0 +1,2 @@
+    --phonograp
+    phonograph = { name = 'phonograph', label = 'Phonograph', weight = 1000, type = 'item', image = 'phonograph.png', unique = false, useable = true, delete = true, shouldClose = true, description = 'Used to play music' },
