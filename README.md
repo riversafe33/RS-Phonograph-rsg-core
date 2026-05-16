@@ -12,8 +12,6 @@ Ko-Fi https://ko-fi.com/riversafe33
 
 Pay pal https://www.paypal.com/donate/?hosted_button_id=NX4ENSGYS6YJN
 
-rs_phonograph V2
-
 Dependency
 
 https://github.com/riversafe33/xsound
