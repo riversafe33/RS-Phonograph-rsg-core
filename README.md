@@ -16,6 +16,8 @@ Dependency
 
 https://github.com/riversafe33/xsound
 
+https://github.com/riversafe33/ox_target
+
 # 🎥 Showcase: https://streamable.com/wzrx3a
 
 <img width="1531" height="905" alt="image" src="https://github.com/user-attachments/assets/59780d2f-6515-4dff-a9ec-d02f5b975c89" />
